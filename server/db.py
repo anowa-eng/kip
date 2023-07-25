@@ -7,14 +7,14 @@ def init():
     cursor = sqlite3.connect(db_path)
     users_table = '''
     CREATE TABLE IF NOT EXISTS Users (
-        ID int NOT NULL PRIMARY KEY,
+        ID int NOT NULL PRIMARY KEY AUTOINCREMENT,
         Username varchar(255) NOT NULL,
         Password text NOT NULL
     );
     '''
     repositories_table = '''
     CREATE TABLE IF NOT EXISTS Repositories (
-        ID int NOT NULL PRIMARY KEY,
+        ID int NOT NULL PRIMARY KEY AUTOINCREMENT,
         FullRepositoryName text NOT NULL,
         AuthorUsername varchar(255),
         RepositoryName varchar(255),
