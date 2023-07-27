@@ -1,4 +1,5 @@
 import sys
+import bcrypt
 from pathlib import Path
 from flask import Flask, request, jsonify
 from flask_session import Session
@@ -24,12 +25,24 @@ def repository_download(user, repo):
     else:
         return jsonify({ 'error': 'Repository does not exist.' })
     
-@app.post('/registry/<user>/<repo>')
-def repository_create(user, repo):
-    repository_path = Path(__file__).parent / f'registry/{user}/{repo}.kip'
-    repository_path.write_bytes(request.files[0])
-    cursor = db.create('Repositories', (f'{user}/{repo}', user, repo, ''))
-    return jsonify(cursor.fetchone())
+@app.post('/user/register')
+def register_user(username, password):
+    hashed_password = bcrypt.hashpw(password.encode('UTF-8'), bcrypt.gensalt())
+    try:
+        cursor = db.create('Users', (username, hashed_password))
+        return jsonify({ 'ok': True })
+    except Exception as e:
+        return jsonify({
+            'ok': False,
+            'error': str(e)
+        })
+    
+# @app.post('/registry/<user>/<repo>')
+# def repository_create(user, repo):
+#     repository_path = Path(__file__).parent / f'registry/{user}/{repo}.kip'
+#     repository_path.write_bytes(request.files[0])
+#     cursor = db.create('Repositories', (f'{user}/{repo}', user, repo, ''))
+#     return jsonify(cursor.fetchone())
 
 if __name__ == '__main__':
     app.run()
