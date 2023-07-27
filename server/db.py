@@ -32,7 +32,10 @@ def init():
 
 def create(table, values):
     connection = sqlite3.connect(db_path)
-    stmt = f'''
-    INSERT INTO {table} VALUES ({", ".join("?" * COLS[table])})
-    '''
+    stmt = f"INSERT INTO {table} VALUES ({', '.join('?' * COLS[table])})"
     return connection.execute(stmt, values)
+
+def fetchpw(username):
+    connection = sqlite3.connect(db_path)
+    stmt = "SELECT Password FROM Users WHERE Username = ?"
+    return connection.execute(stmt, (username,)).fetchone()[0]
