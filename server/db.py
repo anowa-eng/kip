@@ -7,13 +7,13 @@ COLS = {
 }
 TABLES = ('Users', 'Repositories')
 
-db_path = Path(__file__).parent / 'db.sqlite3'
+db_path = Path(__file__).parent / 'database.db'
 def init():
     Path.touch(db_path)
-    connection = sqlite3.connect(db_path)
+    cursor = sqlite3.connect(db_path).cursor()
     users_table = '''
     CREATE TABLE IF NOT EXISTS Users (
-        Username varchar(255) NOT NULL PRIMARY KEY,
+        Username varchar(255) NOT NULL UNIQUE PRIMARY KEY,
         Password text NOT NULL
     );
     '''
@@ -26,16 +26,15 @@ def init():
         FOREIGN KEY (AuthorUsername) REFERENCES Users(Username)
     );
     '''
-    connection.execute(users_table)
-    connection.execute(repositories_table)
-    connection.commit()
+    cursor.execute(users_table)
+    cursor.execute(repositories_table)
 
 def create(table, values):
-    connection = sqlite3.connect(db_path)
-    stmt = f"INSERT INTO {table} VALUES ({', '.join('?' * COLS[table])})"
-    return connection.execute(stmt, values)
+    cursor = sqlite3.connect(db_path).cursor()
+    stmt = f"INSERT INTO {table} VALUES ?"
+    return cursor.execute(stmt, values)
 
 def fetchpw(username):
-    connection = sqlite3.connect(db_path)
+    cursor = sqlite3.connect(db_path).cursor()
     stmt = "SELECT Password FROM Users WHERE Username = ?"
-    return connection.execute(stmt, (username,)).fetchone()[0]
+    return cursor.execute(stmt, (username,)).fetchone()[0]
