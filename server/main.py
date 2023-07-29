@@ -26,11 +26,17 @@ def repository_download(user, repo):
         return jsonify({ 'error': 'Repository does not exist.' })
     
 @app.post('/user/register')
-def register_user(username, password):
-    hashed_password = bcrypt.hashpw(password.encode('UTF-8'), bcrypt.gensalt())
+def register_user():
     try:
-        cursor = db.create('Users', (username, hashed_password))
-        return jsonify({ 'ok': True })
+        username = request.form.get('username')
+        password = request.form.get('password')
+        hashed_password = bcrypt.hashpw(password.encode('UTF-8'), bcrypt.gensalt())
+        if all([username, password]):
+            cursor = db.create('Users', (username, hashed_password))
+            print(cursor)
+            return jsonify({ 'ok': True })
+        else:
+            raise TypeError('Username and password are required.')
     except Exception as e:
         return jsonify({
             'ok': False,
