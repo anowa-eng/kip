@@ -2,23 +2,23 @@ from pathlib import Path
 import sqlite3
 
 COLS = {
-    'Users': 2,
-    'Repositories': 4
+    "Users": 2,
+    "Repositories": 4
 }
-TABLES = ('Users', 'Repositories')
+TABLES = ("Users", "Repositories")
 
-db_path = Path(__file__).parent / 'database.db'
+db_path = Path(__file__).parent / "database.db"
 def init():
     Path.touch(db_path)
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
-    users_table = '''
+    users_table = """
     CREATE TABLE IF NOT EXISTS Users (
         Username varchar(255) NOT NULL UNIQUE PRIMARY KEY,
         Password text NOT NULL
     );
-    '''
-    repositories_table = '''
+    """
+    repositories_table = """
     CREATE TABLE IF NOT EXISTS Repositories (
         FullRepositoryName text NOT NULL PRIMARY KEY,
         AuthorUsername varchar(255),
@@ -26,7 +26,7 @@ def init():
         ModelFilePath text,
         FOREIGN KEY (AuthorUsername) REFERENCES Users(Username)
     );
-    '''
+    """
     cursor.execute(users_table)
     cursor.execute(repositories_table)
     connection.commit()
@@ -36,7 +36,7 @@ def create(table, values):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
     placeholders = list(map(
-        lambda n: '?',
+        lambda n: "?",
         range(COLS[table])
     ))
     stmt = f"INSERT INTO {table} VALUES ({', '.join(placeholders)})"
