@@ -4,22 +4,24 @@ from pathlib import Path
 sys.path.append(str(Path.home() / ".kip/lib"))
 import const
 
-def __set_config(args):
+def set_config(args):
     try:
-        with open(const.KIP_CONFIGURATIONS_FILE, 'r+') as reader:
-            configurations = json.loads(reader.read())
-            n_configurations = {
-                **configurations,
-                **args
-            }
+        file = const.KIP_CONFIGURATIONS_FILE
+        try:
+            json.loads(file.read_text())
+        except Exception:
+            file.write_text('{}')
+        configurations = json.loads(file.read_text())
+        n_configurations = {
+            **configurations,
+            **args
+        }
+        for k in n_configurations:
+            if k not in const.KIP_CONFIGURATIONS_ARGUMENTS:
+                print(f'Warning: "{k}" will not be used by the program.')
+                del n_configurations[k]
+        file.write_text(json.dumps(n_configurations))
         return True
     except Exception as e:
-        print(str(e))
+        print(f"{str(e)}\n -- Failed --")
         return False
-
-def set_registry_url(url):
-    if url[-1] == '/':
-        url = url[0:-1]
-    return __set_config({
-        'registry.url': url
-    })
