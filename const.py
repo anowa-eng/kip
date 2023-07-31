@@ -1,6 +1,7 @@
 from pathlib import Path
 
 KIP_HOME_DIRECTORY = Path.home() / ".kip"
+KIP_VAR_DIRECTORY = Path.home() / ".kip/var"
 KIP_CONFIGURATIONS_FILE = KIP_HOME_DIRECTORY / "config.json"
 
 KIP_CONFIGURATIONS_KEYS = ['defaultRegistry']
