@@ -8,6 +8,6 @@ commandline_parser = argparse.ArgumentParser()
 
 subparsers = commandline_parser.add_subparsers()
 
-config_command = subparsers.add_parser('config-set')
+config_command = subparsers.add_parser('config')
 config_item = config_command.add_argument()
 config_value = config_command.add_argument()
