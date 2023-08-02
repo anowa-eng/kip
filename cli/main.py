@@ -10,3 +10,5 @@ if cmd == 'config':
     functions.set_config({
         argv.k: argv.v
     })
+elif cmd == 'install':
+    functions.install(argv.package)

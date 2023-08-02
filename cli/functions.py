@@ -25,3 +25,8 @@ def set_config(args):
     except Exception as e:
         print(f"{str(e)}\n -- Failed --")
         return False
+
+def install(package_name):
+    # Validate package name
+    if len(package_name.split('/')) != 2:
+        raise Exception('Malformed dependency name - dependency name must be in the format "author/repository"')

@@ -23,7 +23,7 @@ def repository_download(user, repo):
             response.headers['Content-Disposition'] = 'attachment'
             return response
     else:
-        return jsonify({ 'error': 'Repository does not exist.' })
+        return 404, jsonify({ 'error': 'Repository does not exist.' })
     
 @app.post('/user/register')
 def register_user():
