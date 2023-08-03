@@ -1,10 +1,12 @@
 import json
 import sys
+import os
+import zipfile
 from pathlib import Path
 sys.path.append(str(Path.home() / ".kip/lib"))
 import const
 
-def set_config(args):
+def set_config(args: dict):
     try:
         file = const.KIP_CONFIGURATIONS_FILE
         try:
@@ -25,3 +27,24 @@ def set_config(args):
     except Exception as e:
         print(f"{str(e)}\n -- Failed --")
         return False
+
+def __list_dir(folder):
+    def recursive_path_map_function(path):
+        path_dict = {}
+        path_dict['dirname'] = os.path.dirname(path)
+        if os.path.isdir(path):
+            path_dict['contents'] = __list_dir(path)
+    paths = os.listdir(folder)
+    return list(map(
+        lambda path: recursive_path_map_function(folder),
+        paths
+    ))
+
+def list_dir(p_folder: Path):
+    folder = str(p_folder)
+    paths = {}
+    paths['dirpath'] = folder
+    paths['dirname'] = os.path.dirname(folder)
+    if os.path.isdir(folder):
+        paths['content'] = list_dir(folder)
+    return paths

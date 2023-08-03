@@ -1,4 +1,4 @@
 # created by virtualenv automatically
 **/*.pyc
-*/database.db
+database.db
 flask_session
