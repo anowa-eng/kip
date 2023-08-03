@@ -1,7 +1,7 @@
 import json
 import sys
 import os
-import zipfile
+from zipfile import ZipFile
 from pathlib import Path
 sys.path.append(str(Path.home() / ".kip/lib"))
 import const
@@ -28,23 +28,17 @@ def set_config(args: dict):
         print(f"{str(e)}\n -- Failed --")
         return False
 
-def __list_dir(folder):
-    def recursive_path_map_function(path):
-        path_dict = {}
-        path_dict['dirname'] = os.path.dirname(path)
-        if os.path.isdir(path):
-            path_dict['contents'] = __list_dir(path)
-    paths = os.listdir(folder)
-    return list(map(
-        lambda path: recursive_path_map_function(folder),
-        paths
-    ))
-
-def list_dir(p_folder: Path):
-    folder = str(p_folder)
+def __list_dir(p_folder: Path, root_folder: Path = None):
+    folder = os.path.normpath(str(p_folder))
     paths = {}
-    paths['dirpath'] = folder
-    paths['dirname'] = os.path.dirname(folder)
+    paths['path'] = p_folder
+    paths['relative_path'] = p_folder.relative_to(root_folder or p_folder)
+    paths['name'] = os.path.basename(folder)
     if os.path.isdir(folder):
-        paths['content'] = list_dir(folder)
+        paths['content'] = list(map(
+            lambda directory: __list_dir(Path(p_folder / directory), root_folder or p_folder),
+            os.listdir(str(folder))
+        ))
     return paths
+
+print(__list_dir(Path("C:\\Users\\lanie\\.kip\\lib\\")))
