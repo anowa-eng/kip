@@ -1,4 +1,3 @@
-import sys
 import bcrypt
 from pathlib import Path
 from flask import Flask, request, session, jsonify
@@ -49,16 +48,16 @@ def login_user():
     try:
         username = request.form.get('username')
         password_attempt = request.form.get('password')
-        if all([username, password_attempt]):
-            if db.user_exists_with_name(username):
-                user_password = db.fetchpw(username)
-                encoded_password_attempt = password_attempt.encode('utf-8')
-                if bcrypt.checkpw(encoded_password_attempt, user_password):
-                    session['logged_in_as'] = request.form.get('username')
-                    return jsonify({ 'ok': True })
-                else: raise Exception('Incorrect password.')
-            else: raise Exception(f'User {username} does not exist.')
-        else: raise Exception('Username and password are required.')
+        if not all([username, password_attempt]):
+            raise Exception('Username and password are required.')
+        if not db.user_exists_with_name(username):
+            raise Exception(f'User {username} does not exist.')
+        user_password = db.fetchpw(username)
+        encoded_password_attempt = password_attempt.encode('utf-8')
+        if bcrypt.checkpw(encoded_password_attempt, user_password):
+            session['logged_in_as'] = request.form.get('username')
+            return jsonify({ 'ok': True })
+        else: raise Exception('Incorrect password.')
     except Exception as e:
         return jsonify({
             'ok': False,
@@ -70,12 +69,12 @@ def logout_user():
     session['logged_in_as'] = None
     return jsonify({ 'ok': True })
 
-# @app.post('/registry/<user>/<repo>')
-# def repository_create(user, repo):
-#     repository_path = Path(__file__).parent / f'registry/{user}/{repo}.kip'
-#     repository_path.write_bytes(request.files[0])
-#     cursor = db.create('Repositories', (f'{user}/{repo}', user, repo, ''))
-#     return jsonify(cursor.fetchone())
+@app.post(r'/registry/create/<repo>')
+def repository_create(user, repo):
+    repository_path = Path(__file__).parent / f'registry/{user}/{repo}.kip'
+    request.files[0].save(repository_path)
+    cursor = db.create('Repositories', (f'{user}/{repo}', user, repo, repository_path))
+    return jsonify(cursor.fetchone())
 
 if __name__ == '__main__':
     app.run()
