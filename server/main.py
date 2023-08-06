@@ -22,7 +22,7 @@ def repository_download(user, repo):
             response.headers['Content-Disposition'] = 'attachment'
             return response
     else:
-        return jsonify({ 'error': 'Repository does not exist.' })
+        return 404, jsonify({ 'error': 'Repository does not exist.' })
     
 @app.post('/user/register')
 def register_user():
@@ -68,13 +68,6 @@ def login_user():
 def logout_user():
     session['logged_in_as'] = None
     return jsonify({ 'ok': True })
-
-@app.post(r'/registry/create/<repo>')
-def repository_create(user, repo):
-    repository_path = Path(__file__).parent / f'registry/{user}/{repo}.kip'
-    request.files[0].save(repository_path)
-    cursor = db.create('Repositories', (f'{user}/{repo}', user, repo, repository_path))
-    return jsonify(cursor.fetchone())
 
 if __name__ == '__main__':
     app.run()

@@ -28,17 +28,10 @@ def set_config(args: dict):
         print(f"{str(e)}\n -- Failed --")
         return False
 
-def __list_dir(p_folder: Path, root_folder: Path = None):
-    folder = os.path.normpath(str(p_folder))
-    paths = {}
-    paths['path'] = p_folder
-    paths['relative_path'] = p_folder.relative_to(root_folder or p_folder)
-    paths['name'] = os.path.basename(folder)
-    if os.path.isdir(folder):
-        paths['content'] = list(map(
-            lambda directory: __list_dir(Path(p_folder / directory), root_folder or p_folder),
-            os.listdir(str(folder))
-        ))
-    return paths
+def get_conf():
+    return const.KIP_CONFIGURATIONS_FILE.read_text()
 
-print(__list_dir(Path("C:\\Users\\lanie\\.kip\\lib\\")))
+def install(package_name):
+    # Validate package name
+    if len(package_name.split('/')) != 2:
+        raise Exception('Malformed dependency name - dependency name must be in the format "author/repository"')

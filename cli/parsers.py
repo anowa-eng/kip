@@ -11,3 +11,6 @@ subparsers = commandline_parser.add_subparsers()
 config_command = subparsers.add_parser(name="config")
 config_command.add_argument('k')
 config_command.add_argument('v')
+
+install_command = subparsers.add_parser(name="install")
+install_command.add_argument("package")
