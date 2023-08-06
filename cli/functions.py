@@ -1,6 +1,7 @@
 import json
 import sys
 import os
+import requests
 from zipfile import ZipFile
 from pathlib import Path
 sys.path.append(str(Path.home() / ".kip/lib"))
@@ -29,9 +30,26 @@ def set_config(args: dict):
         return False
 
 def get_conf():
-    return const.KIP_CONFIGURATIONS_FILE.read_text()
+    with open(const.KIP_CONFIGURATIONS_FILE) as file:
+        return json.load(file)
+
+def get_registry_url_conf():
+    registry_url = get_conf()['registry.url']
+    if not (
+        registry_url.startswith('https://')
+        or registry_url.startswith('http://')
+    ):
+        registry_url = 'https://' + registry_url
+    if registry_url.endswith('/'):
+        registry_url = registry_url[0:-1]
+    return registry_url
 
 def install(package_name):
     # Validate package name
     if len(package_name.split('/')) != 2:
         raise Exception('Malformed dependency name - dependency name must be in the format "author/repository"')
+    else:
+        registry_url = get_registry_url_conf()
+        resource_download_url = registry_url + '/download/' + package_name
+        file = requests.get(resource_download_url)
+        print(file)
